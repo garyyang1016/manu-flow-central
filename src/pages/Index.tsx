@@ -1,14 +1,52 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
+import { AppSidebar } from "@/components/AppSidebar"
+import { ProductionDashboard } from "@/components/ProductionDashboard"
+import { NotificationBell } from "@/components/NotificationBell"
+import { Button } from "@/components/ui/button"
+import { User } from "lucide-react"
 
 const Index = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
-      </div>
-    </div>
-  );
-};
+    <SidebarProvider>
+      <div className="min-h-screen flex w-full bg-background">
+        <AppSidebar />
+        <main className="flex-1">
+          {/* 頂部導航欄 */}
+          <header className="border-b bg-white px-6 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <SidebarTrigger />
+                <div>
+                  <h1 className="text-2xl font-bold text-industrial-blue-800">生產儀表板</h1>
+                  <p className="text-sm text-gray-600">
+                    歡迎回來，{new Date().toLocaleDateString('zh-TW', { 
+                      year: 'numeric', 
+                      month: 'long', 
+                      day: 'numeric',
+                      weekday: 'long'
+                    })}
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-3">
+                <NotificationBell />
+                <Button variant="outline" size="icon">
+                  <User className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          </header>
 
-export default Index;
+          {/* 主要內容區域 */}
+          <div className="p-6">
+            <ProductionDashboard />
+          </div>
+        </main>
+      </div>
+    </SidebarProvider>
+  )
+}
+
+export default Index
