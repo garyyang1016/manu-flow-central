@@ -1,5 +1,5 @@
 
-import { Building2, BarChart3, Users, User, Bell, Calendar, Settings, LogIn, Clock, MessageSquare, Shield } from "lucide-react"
+import { Building2, BarChart3, Users, User, Bell, Calendar, Settings, LogIn, Clock, MessageSquare, Shield, UserPlus } from "lucide-react"
 import { useLocation } from "react-router-dom"
 import { useAuth } from "@/hooks/useAuth"
 import {
@@ -46,7 +46,8 @@ export function AppSidebar() {
       submenu: [
         { title: "員工假勤", url: "/attendance" },
         { title: "作業時數管理", url: "/work-hours" },
-        { title: "人員問題反映", url: "/hr-issues" }
+        { title: "人員問題反映", url: "/hr-issues" },
+        { title: "使用者登入設定", url: "/user-settings" }
       ]
     },
     {
@@ -66,14 +67,25 @@ export function AppSidebar() {
       ] : undefined
     },
     {
+      title: "申請帳號",
+      url: "/user-registration",
+      icon: UserPlus,
+      requireAuth: false
+    },
+    {
       title: "系統設定",
       url: "/settings",
       icon: Settings,
-      requireAuth: true
+      requireAuth: true,
+      permissionLevel: 300
     },
   ]
 
-  const availableMenuItems = menuItems.filter(item => !item.requireAuth || isLoggedIn)
+  const availableMenuItems = menuItems.filter(item => {
+    if (item.requireAuth && !isLoggedIn) return false
+    if (item.permissionLevel && !hasPermission(item.permissionLevel)) return false
+    return true
+  })
 
   return (
     <Sidebar className="border-r border-sidebar-border">
@@ -130,7 +142,7 @@ export function AppSidebar() {
                   </SidebarMenuButton>
                   {item.submenu && (
                     (location.pathname.startsWith('/production-reports') && item.url === '/production-reports') ||
-                    (location.pathname.startsWith('/attendance') || location.pathname.startsWith('/work-hours') || location.pathname.startsWith('/hr-issues')) && item.url === '/attendance' ||
+                    (location.pathname.startsWith('/attendance') || location.pathname.startsWith('/work-hours') || location.pathname.startsWith('/hr-issues') || location.pathname.startsWith('/user-settings')) && item.url === '/attendance' ||
                     (location.pathname.startsWith('/announcements') && item.url === '/announcements')
                   ) && (
                     <div className="ml-6 mt-1 space-y-1">

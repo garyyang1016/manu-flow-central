@@ -14,6 +14,9 @@ import HRIssues from "./pages/HRIssues";
 import Profile from "./pages/Profile";
 import Announcements from "./pages/Announcements";
 import AnnouncementAdmin from "./pages/AnnouncementAdmin";
+import UserRegistration from "./pages/UserRegistration";
+import UserSettings from "./pages/UserSettings";
+import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -33,9 +36,12 @@ const App = () => (
             <Route path="/attendance" element={<Attendance />} />
             <Route path="/work-hours" element={<WorkHours />} />
             <Route path="/hr-issues" element={<HRIssues />} />
+            <Route path="/user-settings" element={<UserSettings />} />
+            <Route path="/user-registration" element={<UserRegistration />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/announcements" element={<Announcements />} />
             <Route path="/announcements/admin" element={<AnnouncementAdmin />} />
+            <Route path="/settings" element={<Settings />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
