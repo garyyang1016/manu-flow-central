@@ -9,6 +9,8 @@ import Index from "./pages/Index";
 import Login from "./pages/Login";
 import ProductionReports from "./pages/ProductionReports";
 import Attendance from "./pages/Attendance";
+import WorkHours from "./pages/WorkHours";
+import HRIssues from "./pages/HRIssues";
 import Profile from "./pages/Profile";
 import Announcements from "./pages/Announcements";
 import NotFound from "./pages/NotFound";
@@ -28,6 +30,8 @@ const App = () => (
             <Route path="/production-reports" element={<ProductionReports />} />
             <Route path="/production-reports/*" element={<ProductionReports />} />
             <Route path="/attendance" element={<Attendance />} />
+            <Route path="/work-hours" element={<WorkHours />} />
+            <Route path="/hr-issues" element={<HRIssues />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/announcements" element={<Announcements />} />
             <Route path="*" element={<NotFound />} />

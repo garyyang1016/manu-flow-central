@@ -19,9 +19,11 @@ const mockSystems = [
   { reportNo: 1, reportItem: "生產計劃 vs 實際", reportType: "生產資訊報表", url: "/production-reports/plan-actual", description: "即時監控生產進度", owner: "張三", visible: 1, unloginFlag: 1, browseCnt: 234 },
   { reportNo: 2, reportItem: "設備效率分析", reportType: "生產資訊報表", url: "/production-reports/efficiency", description: "設備OEE分析", owner: "李四", visible: 1, unloginFlag: 0, browseCnt: 156 },
   { reportNo: 3, reportItem: "員工出勤管理", reportType: "人員管理", url: "/attendance", description: "考勤統計與假單管理", owner: "王五", visible: 1, unloginFlag: 0, browseCnt: 98 },
-  { reportNo: 4, reportItem: "品質檢驗記錄", reportType: "輔助生產系統", url: "#", description: "產品品質追蹤", owner: "趙六", visible: 1, unloginFlag: 1, browseCnt: 187 },
-  { reportNo: 5, reportItem: "工單排程系統", reportType: "輔助生產系統", url: "#", description: "生產排程管理", owner: "陳七", visible: 1, unloginFlag: 0, browseCnt: 143 },
-  { reportNo: 6, reportItem: "庫存管理系統", reportType: "其他系統", url: "#", description: "原料與成品庫存", owner: "劉八", visible: 1, unloginFlag: 0, browseCnt: 76 }
+  { reportNo: 4, reportItem: "作業時數管理", reportType: "人員管理", url: "/work-hours", description: "員工工時統計與管理", owner: "趙六", visible: 1, unloginFlag: 0, browseCnt: 67 },
+  { reportNo: 5, reportItem: "人員問題反映", reportType: "人員管理", url: "/hr-issues", description: "員工意見與問題回報", owner: "陳七", visible: 1, unloginFlag: 0, browseCnt: 43 },
+  { reportNo: 6, reportItem: "品質檢驗記錄", reportType: "輔助生產系統", url: "#", description: "產品品質追蹤", owner: "劉八", visible: 1, unloginFlag: 1, browseCnt: 187 },
+  { reportNo: 7, reportItem: "工單排程系統", reportType: "輔助生產系統", url: "#", description: "生產排程管理", owner: "林九", visible: 1, unloginFlag: 0, browseCnt: 143 },
+  { reportNo: 8, reportItem: "庫存管理系統", reportType: "其他系統", url: "#", description: "原料與成品庫存", owner: "黃十", visible: 1, unloginFlag: 0, browseCnt: 76 }
 ]
 
 const emergencyContacts = [
@@ -158,6 +160,7 @@ const Index = () => {
                     key={system.reportNo} 
                     {...system} 
                     visible={!!system.visible}
+                    unloginFlag={!!system.unloginFlag}
                     isLoggedIn={isLoggedIn}
                   />
                 ))}

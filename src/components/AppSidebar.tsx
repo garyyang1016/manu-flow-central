@@ -1,5 +1,5 @@
 
-import { Building2, BarChart3, Users, User, Bell, Calendar, Settings, LogIn } from "lucide-react"
+import { Building2, BarChart3, Users, User, Bell, Calendar, Settings, LogIn, Clock, MessageSquare } from "lucide-react"
 import { useLocation } from "react-router-dom"
 import { useAuth } from "@/hooks/useAuth"
 import {
@@ -39,10 +39,15 @@ export function AppSidebar() {
       ]
     },
     {
-      title: "員工假勤",
+      title: "人員管理",
       url: "/attendance",
-      icon: Calendar,
-      requireAuth: true
+      icon: Users,
+      requireAuth: true,
+      submenu: [
+        { title: "員工假勤", url: "/attendance" },
+        { title: "作業時數管理", url: "/work-hours" },
+        { title: "人員問題反映", url: "/hr-issues" }
+      ]
     },
     {
       title: "個人資訊",
@@ -113,7 +118,10 @@ export function AppSidebar() {
                       <span>{item.title}</span>
                     </a>
                   </SidebarMenuButton>
-                  {item.submenu && location.pathname.startsWith('/production-reports') && (
+                  {item.submenu && (
+                    (location.pathname.startsWith('/production-reports') && item.url === '/production-reports') ||
+                    (location.pathname.startsWith('/attendance') || location.pathname.startsWith('/work-hours') || location.pathname.startsWith('/hr-issues')) && item.url === '/attendance'
+                  ) && (
                     <div className="ml-6 mt-1 space-y-1">
                       {item.submenu.map((subItem) => (
                         <SidebarMenuButton 
