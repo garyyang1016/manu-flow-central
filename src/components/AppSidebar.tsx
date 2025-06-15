@@ -1,6 +1,7 @@
 
-import { Building2, BarChart3, Users, User, Bell, Calendar, Settings } from "lucide-react"
+import { Building2, BarChart3, Users, User, Bell, Calendar, Settings, LogIn } from "lucide-react"
 import { useLocation } from "react-router-dom"
+import { useAuth } from "@/hooks/useAuth"
 import {
   Sidebar,
   SidebarContent,
@@ -14,47 +15,56 @@ import {
   SidebarHeader,
 } from "@/components/ui/sidebar"
 
-const menuItems = [
-  {
-    title: "生產儀表板",
-    url: "/",
-    icon: BarChart3,
-  },
-  {
-    title: "生產報表",
-    url: "/production-reports",
-    icon: BarChart3,
-    submenu: [
-      { title: "計劃 vs 實際", url: "/production-reports/plan-actual" },
-      { title: "投入產出", url: "/production-reports/input-output" },
-      { title: "良率分析", url: "/production-reports/yield" },
-      { title: "設備效率", url: "/production-reports/efficiency" }
-    ]
-  },
-  {
-    title: "員工假勤",
-    url: "/attendance",
-    icon: Calendar,
-  },
-  {
-    title: "個人資訊",
-    url: "/profile",
-    icon: User,
-  },
-  {
-    title: "公告中心",
-    url: "/announcements",
-    icon: Bell,
-  },
-  {
-    title: "系統設定",
-    url: "/settings",
-    icon: Settings,
-  },
-]
-
 export function AppSidebar() {
   const location = useLocation()
+  const { isLoggedIn, user } = useAuth()
+
+  const menuItems = [
+    {
+      title: "系統首頁",
+      url: "/",
+      icon: BarChart3,
+      requireAuth: false
+    },
+    {
+      title: "生產報表",
+      url: "/production-reports",
+      icon: BarChart3,
+      requireAuth: false,
+      submenu: [
+        { title: "計劃 vs 實際", url: "/production-reports/plan-actual" },
+        { title: "投入產出", url: "/production-reports/input-output" },
+        { title: "良率分析", url: "/production-reports/yield" },
+        { title: "設備效率", url: "/production-reports/efficiency" }
+      ]
+    },
+    {
+      title: "員工假勤",
+      url: "/attendance",
+      icon: Calendar,
+      requireAuth: true
+    },
+    {
+      title: "個人資訊",
+      url: "/profile",
+      icon: User,
+      requireAuth: true
+    },
+    {
+      title: "公告中心",
+      url: "/announcements",
+      icon: Bell,
+      requireAuth: false
+    },
+    {
+      title: "系統設定",
+      url: "/settings",
+      icon: Settings,
+      requireAuth: true
+    },
+  ]
+
+  const availableMenuItems = menuItems.filter(item => !item.requireAuth || isLoggedIn)
 
   return (
     <Sidebar className="border-r border-sidebar-border">
@@ -68,6 +78,12 @@ export function AppSidebar() {
             <p className="text-sm text-sidebar-foreground/70">管理系統</p>
           </div>
         </div>
+        {isLoggedIn && user && (
+          <div className="mt-3 p-2 bg-sidebar-accent rounded-md">
+            <p className="text-sm text-sidebar-foreground font-medium">{user.wname}</p>
+            <p className="text-xs text-sidebar-foreground/70">{user.position} | {user.site}</p>
+          </div>
+        )}
       </SidebarHeader>
       
       <SidebarContent>
@@ -75,7 +91,17 @@ export function AppSidebar() {
           <SidebarGroupLabel className="text-sidebar-foreground/70">主要功能</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {menuItems.map((item) => (
+              {!isLoggedIn && (
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild className="hover:bg-sidebar-accent">
+                    <a href="/login" className="flex items-center gap-3">
+                      <LogIn className="h-5 w-5" />
+                      <span>登入系統</span>
+                    </a>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )}
+              {availableMenuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton 
                     asChild 
@@ -115,6 +141,11 @@ export function AppSidebar() {
         <div className="text-xs text-sidebar-foreground/70">
           製造部管理系統 v2.1.0
         </div>
+        {!isLoggedIn && (
+          <div className="text-xs text-sidebar-foreground/50 mt-1">
+            訪客模式 - 功能受限
+          </div>
+        )}
       </SidebarFooter>
     </Sidebar>
   )
