@@ -6,11 +6,10 @@ import { NotificationBell } from "@/components/NotificationBell"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { User, LogOut, Search, Settings, Users, BarChart3, Wrench, ExternalLink } from "lucide-react"
+import { User, LogOut, Settings, Users, BarChart3, Wrench, ExternalLink } from "lucide-react"
 import { useAuth } from "@/hooks/useAuth"
 import { SystemCard } from "@/components/SystemCard"
 import { AnnouncementCarousel } from "@/components/AnnouncementCarousel"
-import { SystemSearch } from "@/components/SystemSearch"
 import { EnhancedEmergencyContact } from "@/components/EnhancedEmergencyContact"
 import { ProductionSummary } from "@/components/ProductionSummary"
 import { useNavigate } from "react-router-dom"
@@ -24,7 +23,6 @@ const mockSystems = [
   { reportNo: 5, reportItem: "人員問題反映", reportType: "人員管理", url: "/hr-issues", description: "員工意見與問題回報", owner: "陳七", visible: 1, unloginFlag: 0, browseCnt: 43 },
   { reportNo: 6, reportItem: "使用者登入設定", reportType: "人員管理", url: "/user-settings", description: "員工個資與工作設定", owner: "劉八", visible: 1, unloginFlag: 0, browseCnt: 89 },
   { reportNo: 7, reportItem: "申請使用者帳號", reportType: "系統功能", url: "/user-registration", description: "新用戶註冊申請", owner: "陳九", visible: 1, unloginFlag: 1, browseCnt: 127 },
-  { reportNo: 8, reportItem: "系統功能搜尋", reportType: "系統功能", url: "#search", description: "快速搜尋系統功能", owner: "系統", visible: 1, unloginFlag: 1, browseCnt: 892 },
   { reportNo: 9, reportItem: "品質檢驗記錄", reportType: "輔助生產系統", url: "#", description: "產品品質追蹤", owner: "劉八", visible: 1, unloginFlag: 1, browseCnt: 187 },
   { reportNo: 10, reportItem: "工單排程系統", reportType: "輔助生產系統", url: "#", description: "生產排程管理", owner: "林九", visible: 1, unloginFlag: 0, browseCnt: 143 },
   { reportNo: 11, reportItem: "庫存管理系統", reportType: "其他系統", url: "#", description: "原料與成品庫存", owner: "黃十", visible: 1, unloginFlag: 0, browseCnt: 76 }
@@ -33,50 +31,10 @@ const mockSystems = [
 const Index = () => {
   const { user, isLoggedIn, logout } = useAuth()
   const navigate = useNavigate()
-  const [searchResults, setSearchResults] = useState(mockSystems)
-  const [selectedCategory, setSelectedCategory] = useState("全部")
-
-  const categories = ["全部", "生產資訊報表", "輔助生產系統", "人員管理", "系統功能", "其他系統"]
-
-  const handleSearch = (query: string) => {
-    if (!query.trim()) {
-      setSearchResults(mockSystems)
-      return
-    }
-    
-    const filtered = mockSystems.filter(system => 
-      system.reportItem.toLowerCase().includes(query.toLowerCase()) ||
-      system.description?.toLowerCase().includes(query.toLowerCase()) ||
-      system.reportType.toLowerCase().includes(query.toLowerCase())
-    )
-    setSearchResults(filtered)
-  }
-
-  const handleCategoryFilter = (category: string) => {
-    setSelectedCategory(category)
-    if (category === "全部") {
-      setSearchResults(mockSystems)
-    } else {
-      setSearchResults(mockSystems.filter(system => system.reportType === category))
-    }
-  }
 
   const handleLogout = () => {
     logout()
     navigate('/login')
-  }
-
-  const handleSystemCardClick = (system: typeof mockSystems[0]) => {
-    if (system.url === "#search") {
-      // 聚焦到搜尋框
-      const searchInput = document.querySelector('input[placeholder="搜尋系統功能..."]') as HTMLInputElement
-      if (searchInput) {
-        searchInput.focus()
-        searchInput.scrollIntoView({ behavior: 'smooth' })
-      }
-      return
-    }
-    // 其他系統卡片的原有邏輯保持不變
   }
 
   return (
@@ -119,15 +77,15 @@ const Index = () => {
 
           <div className="p-6 space-y-6">
             {/* 重點公告與快速連結 */}
-            <div className="grid gap-6 lg:grid-cols-3">
+            <div className="grid gap-6 lg:grid-cols-7">
               {/* 重點公告輪播 - 3:4 比例 */}
-              <div className="lg:col-span-2">
+              <div className="lg:col-span-4">
                 <h2 className="text-lg font-semibold mb-4">重點公告</h2>
                 <AnnouncementCarousel />
               </div>
               
               {/* 快速連結與緊急聯絡 */}
-              <div>
+              <div className="lg:col-span-3">
                 <h2 className="text-lg font-semibold mb-4">快速連結與緊急聯絡</h2>
                 <EnhancedEmergencyContact />
               </div>
@@ -139,39 +97,12 @@ const Index = () => {
               <ProductionSummary />
             </div>
 
-            {/* 搜尋區域 */}
-            <Card className="production-card">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Search className="h-5 w-5" />
-                  系統功能搜尋
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <SystemSearch onSearch={handleSearch} />
-              </CardContent>
-            </Card>
-
-            {/* 分類篩選 */}
-            <div className="flex flex-wrap gap-2">
-              {categories.map((category) => (
-                <Button
-                  key={category}
-                  variant={selectedCategory === category ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => handleCategoryFilter(category)}
-                >
-                  {category}
-                </Button>
-              ))}
-            </div>
-
             {/* 系統功能列表 */}
             <div>
               <h2 className="text-lg font-semibold mb-4">系統功能</h2>
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {searchResults.map((system) => (
-                  <div key={system.reportNo} onClick={() => handleSystemCardClick(system)}>
+                {mockSystems.map((system) => (
+                  <div key={system.reportNo}>
                     <SystemCard 
                       {...system} 
                       visible={!!system.visible}

@@ -17,6 +17,7 @@ import AnnouncementAdmin from "./pages/AnnouncementAdmin";
 import UserRegistration from "./pages/UserRegistration";
 import UserSettings from "./pages/UserSettings";
 import Settings from "./pages/Settings";
+import LeaveApplication from "./pages/LeaveApplication";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -42,6 +43,7 @@ const App = () => (
             <Route path="/announcements" element={<Announcements />} />
             <Route path="/announcements/admin" element={<AnnouncementAdmin />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/leave-application" element={<LeaveApplication />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

@@ -1,5 +1,5 @@
 
-import { Building2, BarChart3, Users, User, Bell, Calendar, Settings, LogIn, Clock, MessageSquare, Shield, UserPlus, Search } from "lucide-react"
+import { Building2, BarChart3, Users, User, Bell, Calendar, Settings, LogIn, Clock, MessageSquare, Shield, UserPlus, Search, FileText } from "lucide-react"
 import { useLocation } from "react-router-dom"
 import { useAuth } from "@/hooks/useAuth"
 import {
@@ -51,6 +51,7 @@ export function AppSidebar() {
       requireAuth: true,
       submenu: [
         { title: "員工假勤", url: "/attendance" },
+        { title: "請假申請", url: "/leave-application" },
         { title: "作業時數管理", url: "/work-hours" },
         { title: "人員問題反映", url: "/hr-issues" },
         { title: "使用者登入設定", url: "/user-settings" }
@@ -166,7 +167,7 @@ export function AppSidebar() {
                   </SidebarMenuButton>
                   {item.submenu && (
                     (location.pathname.startsWith('/production-reports') && item.url === '/production-reports') ||
-                    (location.pathname.startsWith('/attendance') || location.pathname.startsWith('/work-hours') || location.pathname.startsWith('/hr-issues') || location.pathname.startsWith('/user-settings')) && item.url === '/attendance' ||
+                    (location.pathname.startsWith('/attendance') || location.pathname.startsWith('/leave-application') || location.pathname.startsWith('/work-hours') || location.pathname.startsWith('/hr-issues') || location.pathname.startsWith('/user-settings')) && item.url === '/attendance' ||
                     (location.pathname.startsWith('/announcements') && item.url === '/announcements')
                   ) && (
                     <div className="ml-6 mt-1 space-y-1">

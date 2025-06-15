@@ -6,10 +6,12 @@ import { NotificationBell } from "@/components/NotificationBell"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { User, Download, Calendar, Filter, FileText, Clock, User as UserIcon } from "lucide-react"
+import { Input } from "@/components/ui/input"
+import { User, Download, Calendar, Filter, FileText, Clock, User as UserIcon, Search } from "lucide-react"
 
 const ProductionReports = () => {
   const [selectedCategory, setSelectedCategory] = useState("Summary")
+  const [searchQuery, setSearchQuery] = useState("")
 
   const categories = ["Summary", "Material", "Feol", "Beol"]
 
@@ -123,6 +125,13 @@ const ProductionReports = () => {
     ]
   }
 
+  // 篩選報表
+  const filteredReports = reportsData[selectedCategory as keyof typeof reportsData].filter(report =>
+    report.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    report.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    report.reviewer.toLowerCase().includes(searchQuery.toLowerCase())
+  )
+
   const getTypeColor = (type: string) => {
     switch (type) {
       case "即時報表":
@@ -173,6 +182,27 @@ const ProductionReports = () => {
           </header>
 
           <div className="p-6 space-y-6">
+            {/* 搜尋功能 */}
+            <Card className="production-card">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Search className="h-5 w-5" />
+                  搜尋報表
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Input
+                    placeholder="搜尋報表名稱、描述或審核者..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
             {/* 分類選擇 */}
             <div className="flex gap-2">
               {categories.map((category) => (
@@ -188,7 +218,7 @@ const ProductionReports = () => {
 
             {/* 報表列表 */}
             <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-2">
-              {reportsData[selectedCategory as keyof typeof reportsData].map((report, index) => (
+              {filteredReports.map((report, index) => (
                 <Card key={index} className="production-card hover:shadow-lg transition-shadow">
                   <CardHeader>
                     <div className="flex items-start justify-between">
@@ -253,6 +283,14 @@ const ProductionReports = () => {
                 </Card>
               ))}
             </div>
+
+            {filteredReports.length === 0 && (
+              <Card className="production-card">
+                <CardContent className="p-8 text-center">
+                  <p className="text-gray-600">沒有找到符合條件的報表</p>
+                </CardContent>
+              </Card>
+            )}
           </div>
         </main>
       </div>
