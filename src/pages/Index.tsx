@@ -6,9 +6,19 @@ import { ProductionDashboard } from "@/components/ProductionDashboard"
 import { ProductionSummary } from "@/components/ProductionSummary"
 import { AnnouncementCarousel } from "@/components/AnnouncementCarousel"
 import { SystemSearch } from "@/components/SystemSearch"
-import { EmergencyContact } from "@/components/EmergencyContact"
 import { Button } from "@/components/ui/button"
-import { User } from "lucide-react"
+import { User, Phone } from "lucide-react"
+import { Card, CardContent } from "@/components/ui/card"
+
+// 緊急聯絡人資料
+const emergencyContacts = [
+  { name: "值班經理", phone: "1234", department: "管理部" },
+  { name: "安全主管", phone: "5678", department: "安全組" },
+  { name: "維修組長", phone: "9101", department: "維修組" },
+  { name: "品保主管", phone: "1213", department: "品保組" },
+  { name: "廠務主管", phone: "1415", department: "廠務組" },
+  { name: "環安人員", phone: "1617", department: "環安組" }
+]
 
 const Index = () => {
   return (
@@ -51,7 +61,27 @@ const Index = () => {
               {/* 右側：公告和緊急聯絡 */}
               <div className="space-y-6">
                 <AnnouncementCarousel />
-                <EmergencyContact />
+                
+                {/* 緊急聯絡 */}
+                <Card className="production-card">
+                  <CardContent className="p-4">
+                    <h3 className="text-lg font-semibold mb-4">緊急聯絡</h3>
+                    <div className="grid grid-cols-2 gap-3">
+                      {emergencyContacts.map((contact, index) => (
+                        <Card key={index} className="production-card w-full h-28 hover:shadow-lg transition-shadow cursor-pointer">
+                          <CardContent className="p-2 h-full flex flex-col items-center justify-center text-center">
+                            <div className="w-10 h-10 bg-industrial-orange-100 rounded-full flex items-center justify-center mb-1">
+                              <Phone className="h-5 w-5 text-industrial-orange-600" />
+                            </div>
+                            <div className="text-xs font-medium text-gray-800 leading-tight">{contact.name}</div>
+                            <div className="text-xs text-gray-600 mt-1">{contact.department}</div>
+                            <div className="text-xs font-bold text-industrial-orange-600 mt-1">{contact.phone}</div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
             </div>
           </div>

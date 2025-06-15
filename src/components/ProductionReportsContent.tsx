@@ -1,175 +1,170 @@
 
 import { useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Download, Filter, Calendar, FileText, Clock, User as UserIcon, Search } from "lucide-react"
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
+import { Badge } from "@/components/ui/badge"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
+import { 
+  FileText, 
+  Download, 
+  Calendar, 
+  User, 
+  Settings, 
+  ChevronLeft, 
+  ChevronRight 
+} from "lucide-react"
 
-export const ProductionReportsContent = () => {
-  const [selectedCategory, setSelectedCategory] = useState("Summary")
-  const [selectedSubCategory, setSelectedSubCategory] = useState("WIP")
-  const [searchQuery, setSearchQuery] = useState("")
+// 報表資料結構
+interface Report {
+  title: string
+  description: string
+  lastUpdated: string
+  type: string
+  updateFreq: string
+  reviewer: string
+  logic: string
+}
 
-  const categories = ["Summary", "Material", "Feol", "Beol"]
-  
-  const subCategories = {
-    "Summary": ["WIP", "KIP", "機台資訊"],
-    "Material": [],
-    "Feol": [],
-    "Beol": []
-  }
-
-  const reportsData = {
-    Summary: {
-      WIP: [
-        {
-          title: "WIP庫存報表",
-          description: "在製品庫存狀況統計",
-          lastUpdated: "2024-05-29",
-          type: "即時報表",
-          updateFreq: "每小時",
-          reviewer: "生產主管",
-          logic: "追蹤各站點在製品數量與週轉狀況"
-        },
-        {
-          title: "WIP流動分析",
-          description: "在製品流動速度與瓶頸分析",
-          lastUpdated: "2024-05-28",
-          type: "日報表",
-          updateFreq: "每日",
-          reviewer: "製程工程師",
-          logic: "分析WIP在各站點的停留時間"
-        }
-      ],
-      KIP: [
-        {
-          title: "關鍵指標儀表板",
-          description: "KIP關鍵績效指標監控",
-          lastUpdated: "2024-05-29",
-          type: "即時報表",
-          updateFreq: "每小時",
-          reviewer: "廠長",
-          logic: "彙整良率、稼動率、產能利用率等關鍵指標"
-        },
-        {
-          title: "KIP趨勢分析",
-          description: "關鍵指標歷史趨勢分析",
-          lastUpdated: "2024-05-27",
-          type: "週報表",
-          updateFreq: "每週",
-          reviewer: "品保主管",
-          logic: "分析KIP指標變化趨勢與改善方向"
-        }
-      ],
-      機台資訊: [
-        {
-          title: "機台狀態監控",
-          description: "所有機台即時狀態顯示",
-          lastUpdated: "2024-05-29",
-          type: "即時報表",
-          updateFreq: "即時",
-          reviewer: "設備工程師",
-          logic: "監控機台運行、停機、維修狀態"
-        },
-        {
-          title: "機台效能分析",
-          description: "機台產能與效率統計",
-          lastUpdated: "2024-05-28",
-          type: "日報表",
-          updateFreq: "每日",
-          reviewer: "生產主管",
-          logic: "計算機台OEE與產能利用率"
-        }
-      ]
+// Summary 子分類的報表資料
+const summaryReports = {
+  WIP: [
+    {
+      title: "在製品庫存報表",
+      description: "顯示各生產線在製品數量與狀態",
+      lastUpdated: "2024-06-15",
+      type: "Excel",
+      updateFreq: "每日",
+      reviewer: "生產經理",
+      logic: "統計各工站在製品數量"
     },
-    Material: [
-      {
-        title: "原料投入分析",
-        description: "原物料使用效率與損耗分析",
-        lastUpdated: "2024-05-29",
-        type: "日報表",
-        updateFreq: "每日",
-        reviewer: "物料主管",
-        logic: "計算原料投入產出比，分析損耗原因"
-      },
-      {
-        title: "庫存水位監控",
-        description: "原料庫存狀況與安全庫存預警",
-        lastUpdated: "2024-05-29",
-        type: "即時報表",
-        updateFreq: "每小時",
-        reviewer: "倉管主管",
-        logic: "監控庫存水位，低於安全庫存自動預警"
-      }
-    ],
-    Feol: [
-      {
-        title: "前段製程良率",
-        description: "Feol製程各站點良率分析",
-        lastUpdated: "2024-05-29",
-        type: "即時報表",
-        updateFreq: "每小時",
-        reviewer: "Feol主管",
-        logic: "計算各製程站點良率，識別異常站點"
-      },
-      {
-        title: "設備稼動率分析",
-        description: "Feol設備運行效率統計",
-        lastUpdated: "2024-05-29",
-        type: "日報表",
-        updateFreq: "每日",
-        reviewer: "設備工程師",
-        logic: "統計設備運行時間與停機原因分析"
-      }
-    ],
-    Beol: [
-      {
-        title: "後段製程良率",
-        description: "Beol製程良率與缺陷分析",
-        lastUpdated: "2024-05-29",
-        type: "即時報表",
-        updateFreq: "每小時",
-        reviewer: "Beol主管",
-        logic: "追蹤後段製程良率，分析主要缺陷類型"
-      },
-      {
-        title: "封裝測試報告",
-        description: "封裝與最終測試結果統計",
-        lastUpdated: "2024-05-28",
-        type: "日報表",
-        updateFreq: "每日",
-        reviewer: "測試工程師",
-        logic: "統計封裝良率與測試通過率"
-      }
-    ]
-  }
-
-  // 取得當前分類的報表資料
-  const getCurrentReports = () => {
-    if (selectedCategory === "Summary" && reportsData.Summary[selectedSubCategory as keyof typeof reportsData.Summary]) {
-      return reportsData.Summary[selectedSubCategory as keyof typeof reportsData.Summary]
+    {
+      title: "WIP 週轉率分析",
+      description: "分析在製品週轉效率",
+      lastUpdated: "2024-06-14",
+      type: "PDF",
+      updateFreq: "週報",
+      reviewer: "IE工程師",
+      logic: "計算週轉天數與效率指標"
     }
-    return reportsData[selectedCategory as keyof typeof reportsData] || []
-  }
+  ],
+  KIP: [
+    {
+      title: "關鍵績效指標",
+      description: "月度KIP綜合分析報表",
+      lastUpdated: "2024-06-15",
+      type: "Excel",
+      updateFreq: "月報",
+      reviewer: "廠長",
+      logic: "彙整各部門關鍵指標"
+    },
+    {
+      title: "生產效率KIP",
+      description: "生產線效率關鍵指標追蹤",
+      lastUpdated: "2024-06-14",
+      type: "PDF",
+      updateFreq: "週報",
+      reviewer: "生產主管",
+      logic: "監控生產效率變化趨勢"
+    }
+  ],
+  機台資訊: [
+    {
+      title: "設備稼動率報表",
+      description: "各機台運轉時間與稼動率統計",
+      lastUpdated: "2024-06-15",
+      type: "Excel",
+      updateFreq: "每日",
+      reviewer: "設備工程師",
+      logic: "計算機台運轉時間比例"
+    },
+    {
+      title: "設備維護記錄",
+      description: "機台保養與維修歷程記錄",
+      lastUpdated: "2024-06-13",
+      type: "PDF",
+      updateFreq: "不定期",
+      reviewer: "維修主管",
+      logic: "記錄設備維護作業"
+    }
+  ]
+}
 
-  // 篩選報表
-  const filteredReports = getCurrentReports().filter((report: any) =>
-    report.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    report.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    report.reviewer.toLowerCase().includes(searchQuery.toLowerCase())
-  )
+// 其他分類的報表資料
+const otherReports: Report[] = [
+  {
+    title: "月度生產統計",
+    description: "本月各產線產量與良率統計分析",
+    lastUpdated: "2024-06-15",
+    type: "Excel",
+    updateFreq: "月報",
+    reviewer: "生產經理",
+    logic: "彙整月度生產數據"
+  },
+  {
+    title: "品質分析報告",
+    description: "產品品質趨勢與不良分析",
+    lastUpdated: "2024-06-14",
+    type: "PDF",
+    updateFreq: "週報",
+    reviewer: "品保主管",
+    logic: "分析品質問題根因"
+  },
+  {
+    title: "成本效益分析",
+    description: "生產成本與效益評估報告",
+    lastUpdated: "2024-06-13",
+    type: "Excel",
+    updateFreq: "月報",
+    reviewer: "財務經理",
+    logic: "計算生產成本效益比"
+  }
+]
+
+export function ProductionReportsContent() {
+  const [activeCategory, setActiveCategory] = useState("Summary")
+  const [activeSummaryTab, setActiveSummaryTab] = useState("WIP")
+
+  const categories = [
+    { id: "Summary", name: "Summary", icon: FileText },
+    { id: "Planning", name: "Planning", icon: Calendar },
+    { id: "Quality", name: "Quality", icon: Settings },
+    { id: "Analytics", name: "Analytics", icon: User }
+  ]
+
+  const summaryTabs = [
+    { id: "WIP", name: "WIP" },
+    { id: "KIP", name: "KIP" },
+    { id: "機台資訊", name: "機台資訊" }
+  ]
+
+  const getCurrentReports = () => {
+    if (activeCategory === "Summary") {
+      return summaryReports[activeSummaryTab as keyof typeof summaryReports] || []
+    }
+    return otherReports
+  }
 
   const getTypeColor = (type: string) => {
     switch (type) {
-      case "即時報表":
+      case "Excel":
         return "bg-green-100 text-green-800"
-      case "日報表":
+      case "PDF":
+        return "bg-red-100 text-red-800"
+      case "CSV":
         return "bg-blue-100 text-blue-800"
-      case "週報表":
-        return "bg-yellow-100 text-yellow-800"
-      case "月報表":
+      default:
+        return "bg-gray-100 text-gray-800"
+    }
+  }
+
+  const getFrequencyColor = (freq: string) => {
+    switch (freq) {
+      case "每日":
+        return "bg-orange-100 text-orange-800"
+      case "週報":
+        return "bg-blue-100 text-blue-800"
+      case "月報":
         return "bg-purple-100 text-purple-800"
       default:
         return "bg-gray-100 text-gray-800"
@@ -178,139 +173,142 @@ export const ProductionReportsContent = () => {
 
   return (
     <div className="space-y-6">
-      {/* 搜尋功能 */}
-      <Card className="production-card">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Search className="h-5 w-5" />
-            搜尋報表
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <Input
-              placeholder="搜尋報表名稱、描述或審核者..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* 分類選擇 */}
+      {/* 分類導航 */}
       <div className="flex gap-2">
-        {categories.map((category) => (
-          <Button
-            key={category}
-            variant={selectedCategory === category ? "default" : "outline"}
-            onClick={() => setSelectedCategory(category)}
-          >
-            {category}
-          </Button>
-        ))}
+        {categories.map((category) => {
+          const IconComponent = category.icon
+          return (
+            <Button
+              key={category.id}
+              variant={activeCategory === category.id ? "default" : "outline"}
+              onClick={() => setActiveCategory(category.id)}
+              className="flex items-center gap-2"
+            >
+              <IconComponent className="h-4 w-4" />
+              {category.name}
+            </Button>
+          )
+        })}
       </div>
 
-      {/* Summary 子分類選擇 */}
-      {selectedCategory === "Summary" && (
-        <div className="flex gap-2">
-          {subCategories.Summary.map((subCategory) => (
-            <Button
-              key={subCategory}
-              variant={selectedSubCategory === subCategory ? "default" : "outline"}
-              size="sm"
-              onClick={() => setSelectedSubCategory(subCategory)}
-            >
-              {subCategory}
-            </Button>
-          ))}
-        </div>
+      {/* Summary 子分類標籤 */}
+      {activeCategory === "Summary" && (
+        <Tabs value={activeSummaryTab} onValueChange={setActiveSummaryTab}>
+          <TabsList className="grid w-full grid-cols-3">
+            {summaryTabs.map((tab) => (
+              <TabsTrigger key={tab.id} value={tab.id}>
+                {tab.name}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </Tabs>
       )}
 
-      {/* 報表輪播顯示 */}
-      {filteredReports.length > 0 && (
-        <Carousel className="w-full">
-          <CarouselContent>
-            {filteredReports.map((report: any, index: number) => (
-              <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
-                <Card className="production-card hover:shadow-lg transition-shadow h-full">
+      {/* 報表列表 */}
+      <div className="space-y-4">
+        {activeCategory === "Summary" ? (
+          <ScrollArea className="w-full whitespace-nowrap">
+            <div className="flex gap-4 pb-4">
+              {getCurrentReports().map((report, index) => (
+                <Card key={index} className="production-card min-w-[300px] hover:shadow-lg transition-shadow">
                   <CardHeader>
                     <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <CardTitle className="text-lg">{report.title}</CardTitle>
-                        <CardDescription className="mt-2">
-                          {report.description}
-                        </CardDescription>
+                      <CardTitle className="text-lg">{report.title}</CardTitle>
+                      <div className="flex gap-2">
+                        <Badge className={getTypeColor(report.type)}>
+                          {report.type}
+                        </Badge>
                       </div>
-                      <Button variant="outline" size="icon">
-                        <Download className="h-4 w-4" />
-                      </Button>
                     </div>
+                    <CardDescription>{report.description}</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    {/* 基本資訊 */}
-                    <div className="flex items-center justify-between text-sm">
-                      <Badge className={getTypeColor(report.type)}>
-                        {report.type}
-                      </Badge>
-                      <span className="text-gray-600">更新: {report.lastUpdated}</span>
-                    </div>
-
-                    {/* 詳細資訊 */}
                     <div className="grid grid-cols-2 gap-4 text-sm">
-                      <div className="flex items-center gap-2">
-                        <Clock className="h-4 w-4 text-gray-500" />
-                        <span className="text-gray-600">更新頻率:</span>
-                        <span className="font-medium">{report.updateFreq}</span>
+                      <div>
+                        <span className="text-gray-500">更新頻率:</span>
+                        <Badge className={`ml-2 ${getFrequencyColor(report.updateFreq)}`}>
+                          {report.updateFreq}
+                        </Badge>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <UserIcon className="h-4 w-4 text-gray-500" />
-                        <span className="text-gray-600">審核者:</span>
-                        <span className="font-medium">{report.reviewer}</span>
+                      <div>
+                        <span className="text-gray-500">最後更新:</span>
+                        <span className="ml-2 font-medium">{report.lastUpdated}</span>
                       </div>
-                    </div>
-
-                    {/* 檢視邏輯 */}
-                    <div className="border-t pt-3">
-                      <div className="flex items-start gap-2 text-sm">
-                        <FileText className="h-4 w-4 text-gray-500 mt-0.5" />
-                        <div>
-                          <span className="text-gray-600">檢視邏輯:</span>
-                          <p className="text-gray-700 mt-1">{report.logic}</p>
-                        </div>
+                      <div>
+                        <span className="text-gray-500">審核者:</span>
+                        <span className="ml-2 font-medium">{report.reviewer}</span>
+                      </div>
+                      <div>
+                        <span className="text-gray-500">邏輯:</span>
+                        <span className="ml-2 text-xs text-gray-600">{report.logic}</span>
                       </div>
                     </div>
-
-                    {/* 操作按鈕 */}
                     <div className="flex gap-2">
                       <Button size="sm" className="flex-1">
-                        查看報表
+                        <Download className="h-4 w-4 mr-2" />
+                        下載
                       </Button>
                       <Button variant="outline" size="sm">
-                        設定
-                      </Button>
-                      <Button variant="outline" size="sm">
-                        排程
+                        預覽
                       </Button>
                     </div>
                   </CardContent>
                 </Card>
-              </CarouselItem>
+              ))}
+            </div>
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
+        ) : (
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {getCurrentReports().map((report, index) => (
+              <Card key={index} className="production-card hover:shadow-lg transition-shadow">
+                <CardHeader>
+                  <div className="flex items-start justify-between">
+                    <CardTitle className="text-lg">{report.title}</CardTitle>
+                    <div className="flex gap-2">
+                      <Badge className={getTypeColor(report.type)}>
+                        {report.type}
+                      </Badge>
+                    </div>
+                  </div>
+                  <CardDescription>{report.description}</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <span className="text-gray-500">更新頻率:</span>
+                      <Badge className={`ml-2 ${getFrequencyColor(report.updateFreq)}`}>
+                        {report.updateFreq}
+                      </Badge>
+                    </div>
+                    <div>
+                      <span className="text-gray-500">最後更新:</span>
+                      <span className="ml-2 font-medium">{report.lastUpdated}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-500">審核者:</span>
+                      <span className="ml-2 font-medium">{report.reviewer}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-500">邏輯:</span>
+                      <span className="ml-2 text-xs text-gray-600">{report.logic}</span>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button size="sm" className="flex-1">
+                      <Download className="h-4 w-4 mr-2" />
+                      下載
+                    </Button>
+                    <Button variant="outline" size="sm">
+                      預覽
+                    </Button>
+                  </div>
+                </CardContent>
+              </div>
             ))}
-          </CarouselContent>
-          <CarouselPrevious />
-          <CarouselNext />
-        </Carousel>
-      )}
-
-      {filteredReports.length === 0 && (
-        <Card className="production-card">
-          <CardContent className="p-8 text-center">
-            <p className="text-gray-600">沒有找到符合條件的報表</p>
-          </CardContent>
-        </Card>
-      )}
+          </div>
+        )}
+      </div>
     </div>
   )
 }
