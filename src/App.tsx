@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -19,6 +18,8 @@ import UserSettings from "./pages/UserSettings";
 import Settings from "./pages/Settings";
 import LeaveApplication from "./pages/LeaveApplication";
 import NotFound from "./pages/NotFound";
+import ProcessTraining from "./pages/ProcessTraining";
+import ProductionSupport from "./pages/ProductionSupport";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +35,9 @@ const App = () => (
             <Route path="/login" element={<Login />} />
             <Route path="/production-reports" element={<ProductionReports />} />
             <Route path="/production-reports/*" element={<ProductionReports />} />
+            <Route path="/production-support" element={<ProductionSupport />} />
+            <Route path="/production-support/*" element={<ProductionSupport />} />
+            <Route path="/process-training" element={<ProcessTraining />} />
             <Route path="/attendance" element={<Attendance />} />
             <Route path="/work-hours" element={<WorkHours />} />
             <Route path="/hr-issues" element={<HRIssues />} />

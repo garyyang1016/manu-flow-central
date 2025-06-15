@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { User, Filter, Calendar } from "lucide-react"
 import { ProductionReportsContent } from "@/components/ProductionReportsContent"
 
-const ProductionReports = () => {
+const ProductionSupport = () => {
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-background">
@@ -17,9 +17,9 @@ const ProductionReports = () => {
               <div className="flex items-center gap-4">
                 <SidebarTrigger />
                 <div>
-                  <h1 className="text-2xl font-bold text-industrial-blue-800">生產報表</h1>
+                  <h1 className="text-2xl font-bold text-industrial-blue-800">生產輔助系統</h1>
                   <p className="text-sm text-gray-600">
-                    查看和下載各種生產分析報表
+                    生產流程輔助工具和系統功能
                   </p>
                 </div>
               </div>
@@ -50,4 +50,4 @@ const ProductionReports = () => {
   )
 }
 
-export default ProductionReports
+export default ProductionSupport

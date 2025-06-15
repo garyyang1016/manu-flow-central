@@ -1,4 +1,3 @@
-
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -9,7 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Badge } from "@/components/ui/badge"
-import { Calendar as CalendarIcon, Clock, Send, FileText } from "lucide-react"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Calendar as CalendarIcon, Clock, Send, FileText, AlertTriangle } from "lucide-react"
 import { useAuth } from "@/hooks/useAuth"
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
@@ -22,6 +22,7 @@ export const LeaveApplicationForm = () => {
   const [endTime, setEndTime] = useState("")
   const [leaveType, setLeaveType] = useState("")
   const [reason, setReason] = useState("")
+  const [timeError, setTimeError] = useState("")
 
   // 生成時間選項（以30分鐘為間隔）
   const generateTimeOptions = () => {
@@ -36,6 +37,51 @@ export const LeaveApplicationForm = () => {
   }
 
   const timeOptions = generateTimeOptions()
+
+  // 驗證時間
+  const validateTime = () => {
+    if (!startDate || !endDate || !startTime || !endTime) {
+      return true // 如果沒有完整資料，不顯示錯誤
+    }
+
+    const startDateTime = new Date(startDate)
+    const endDateTime = new Date(endDate)
+    
+    const [startHour, startMinute] = startTime.split(':').map(Number)
+    const [endHour, endMinute] = endTime.split(':').map(Number)
+    
+    startDateTime.setHours(startHour, startMinute, 0, 0)
+    endDateTime.setHours(endHour, endMinute, 0, 0)
+
+    if (startDateTime >= endDateTime) {
+      setTimeError("結束時間必須晚於開始時間")
+      return false
+    }
+    
+    setTimeError("")
+    return true
+  }
+
+  // 監聽時間變化
+  const handleTimeChange = (type: 'start' | 'end', value: string) => {
+    if (type === 'start') {
+      setStartTime(value)
+    } else {
+      setEndTime(value)
+    }
+    // 延遲驗證，確保狀態已更新
+    setTimeout(validateTime, 100)
+  }
+
+  const handleDateChange = (type: 'start' | 'end', date: Date | undefined) => {
+    if (type === 'start') {
+      setStartDate(date)
+    } else {
+      setEndDate(date)
+    }
+    // 延遲驗證，確保狀態已更新
+    setTimeout(validateTime, 100)
+  }
 
   // 模擬使用者的假期餘額
   const leaveBalances = [
@@ -52,6 +98,10 @@ export const LeaveApplicationForm = () => {
   ]
 
   const handleSubmit = () => {
+    if (!validateTime()) {
+      return
+    }
+    
     // 處理請假申請提交
     console.log({
       startDate,
@@ -135,7 +185,7 @@ export const LeaveApplicationForm = () => {
                     <Calendar
                       mode="single"
                       selected={startDate}
-                      onSelect={setStartDate}
+                      onSelect={(date) => handleDateChange('start', date)}
                       initialFocus
                       className="pointer-events-auto"
                     />
@@ -144,7 +194,7 @@ export const LeaveApplicationForm = () => {
               </div>
               <div>
                 <Label>開始時間</Label>
-                <Select value={startTime} onValueChange={setStartTime}>
+                <Select value={startTime} onValueChange={(value) => handleTimeChange('start', value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="選擇開始時間" />
                   </SelectTrigger>
@@ -180,7 +230,7 @@ export const LeaveApplicationForm = () => {
                     <Calendar
                       mode="single"
                       selected={endDate}
-                      onSelect={setEndDate}
+                      onSelect={(date) => handleDateChange('end', date)}
                       initialFocus
                       className="pointer-events-auto"
                     />
@@ -189,7 +239,7 @@ export const LeaveApplicationForm = () => {
               </div>
               <div>
                 <Label>結束時間</Label>
-                <Select value={endTime} onValueChange={setEndTime}>
+                <Select value={endTime} onValueChange={(value) => handleTimeChange('end', value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="選擇結束時間" />
                   </SelectTrigger>
@@ -204,6 +254,16 @@ export const LeaveApplicationForm = () => {
               </div>
             </div>
 
+            {/* 時間驗證錯誤提示 */}
+            {timeError && (
+              <Alert variant="destructive">
+                <AlertTriangle className="h-4 w-4" />
+                <AlertDescription>
+                  {timeError}
+                </AlertDescription>
+              </Alert>
+            )}
+
             {/* 請假原因 */}
             <div>
               <Label>請假原因</Label>
@@ -217,7 +277,7 @@ export const LeaveApplicationForm = () => {
 
             {/* 提交按鈕 */}
             <div className="flex gap-2">
-              <Button onClick={handleSubmit} className="flex-1">
+              <Button onClick={handleSubmit} className="flex-1" disabled={!!timeError}>
                 <Send className="h-4 w-4 mr-2" />
                 提交申請
               </Button>
