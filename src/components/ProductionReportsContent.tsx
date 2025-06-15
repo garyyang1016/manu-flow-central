@@ -304,7 +304,7 @@ export function ProductionReportsContent() {
                     </Button>
                   </div>
                 </CardContent>
-              </div>
+              </Card>
             ))}
           </div>
         )}
