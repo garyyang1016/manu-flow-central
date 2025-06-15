@@ -1,5 +1,5 @@
 
-import { Building2, BarChart3, Users, User, Bell, Calendar, Settings, LogIn, Clock, MessageSquare } from "lucide-react"
+import { Building2, BarChart3, Users, User, Bell, Calendar, Settings, LogIn, Clock, MessageSquare, Shield } from "lucide-react"
 import { useLocation } from "react-router-dom"
 import { useAuth } from "@/hooks/useAuth"
 import {
@@ -17,7 +17,7 @@ import {
 
 export function AppSidebar() {
   const location = useLocation()
-  const { isLoggedIn, user } = useAuth()
+  const { isLoggedIn, user, hasPermission } = useAuth()
 
   const menuItems = [
     {
@@ -59,7 +59,11 @@ export function AppSidebar() {
       title: "公告中心",
       url: "/announcements",
       icon: Bell,
-      requireAuth: false
+      requireAuth: false,
+      submenu: hasPermission(300) ? [
+        { title: "查看公告", url: "/announcements" },
+        { title: "公告管理", url: "/announcements/admin" }
+      ] : undefined
     },
     {
       title: "系統設定",
@@ -87,6 +91,12 @@ export function AppSidebar() {
           <div className="mt-3 p-2 bg-sidebar-accent rounded-md">
             <p className="text-sm text-sidebar-foreground font-medium">{user.wname}</p>
             <p className="text-xs text-sidebar-foreground/70">{user.position} | {user.site}</p>
+            {hasPermission(300) && (
+              <div className="flex items-center gap-1 mt-1">
+                <Shield className="h-3 w-3 text-green-600" />
+                <span className="text-xs text-green-600 font-medium">管理員</span>
+              </div>
+            )}
           </div>
         )}
       </SidebarHeader>
@@ -120,7 +130,8 @@ export function AppSidebar() {
                   </SidebarMenuButton>
                   {item.submenu && (
                     (location.pathname.startsWith('/production-reports') && item.url === '/production-reports') ||
-                    (location.pathname.startsWith('/attendance') || location.pathname.startsWith('/work-hours') || location.pathname.startsWith('/hr-issues')) && item.url === '/attendance'
+                    (location.pathname.startsWith('/attendance') || location.pathname.startsWith('/work-hours') || location.pathname.startsWith('/hr-issues')) && item.url === '/attendance' ||
+                    (location.pathname.startsWith('/announcements') && item.url === '/announcements')
                   ) && (
                     <div className="ml-6 mt-1 space-y-1">
                       {item.submenu.map((subItem) => (

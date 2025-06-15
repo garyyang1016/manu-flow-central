@@ -13,6 +13,7 @@ import WorkHours from "./pages/WorkHours";
 import HRIssues from "./pages/HRIssues";
 import Profile from "./pages/Profile";
 import Announcements from "./pages/Announcements";
+import AnnouncementAdmin from "./pages/AnnouncementAdmin";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -34,6 +35,7 @@ const App = () => (
             <Route path="/hr-issues" element={<HRIssues />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/announcements" element={<Announcements />} />
+            <Route path="/announcements/admin" element={<AnnouncementAdmin />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
