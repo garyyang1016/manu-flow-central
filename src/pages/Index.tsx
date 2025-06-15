@@ -118,7 +118,22 @@ const Index = () => {
           </header>
 
           <div className="p-6 space-y-6">
-            {/* 生產資訊儀表板 */}
+            {/* 重點公告與快速連結 */}
+            <div className="grid gap-6 lg:grid-cols-3">
+              {/* 重點公告輪播 - 3:4 比例 */}
+              <div className="lg:col-span-2">
+                <h2 className="text-lg font-semibold mb-4">重點公告</h2>
+                <AnnouncementCarousel />
+              </div>
+              
+              {/* 快速連結與緊急聯絡 */}
+              <div>
+                <h2 className="text-lg font-semibold mb-4">快速連結與緊急聯絡</h2>
+                <EnhancedEmergencyContact />
+              </div>
+            </div>
+
+            {/* 生產概況 */}
             <div>
               <h2 className="text-lg font-semibold mb-4">生產概況</h2>
               <ProductionSummary />
@@ -136,18 +151,6 @@ const Index = () => {
                 <SystemSearch onSearch={handleSearch} />
               </CardContent>
             </Card>
-
-            {/* 公告輪播與緊急聯絡 */}
-            <div className="space-y-6">
-              <div>
-                <h2 className="text-lg font-semibold mb-4">重點公告</h2>
-                <AnnouncementCarousel />
-              </div>
-              <div>
-                <h2 className="text-lg font-semibold mb-4">快速連結與緊急聯絡</h2>
-                <EnhancedEmergencyContact />
-              </div>
-            </div>
 
             {/* 分類篩選 */}
             <div className="flex flex-wrap gap-2">

@@ -1,5 +1,5 @@
 
-import { Building2, BarChart3, Users, User, Bell, Calendar, Settings, LogIn, Clock, MessageSquare, Shield, UserPlus } from "lucide-react"
+import { Building2, BarChart3, Users, User, Bell, Calendar, Settings, LogIn, Clock, MessageSquare, Shield, UserPlus, Search } from "lucide-react"
 import { useLocation } from "react-router-dom"
 import { useAuth } from "@/hooks/useAuth"
 import {
@@ -27,15 +27,21 @@ export function AppSidebar() {
       requireAuth: false
     },
     {
+      title: "系統功能搜尋",
+      url: "/#search",
+      icon: Search,
+      requireAuth: false
+    },
+    {
       title: "生產報表",
       url: "/production-reports",
       icon: BarChart3,
       requireAuth: false,
       submenu: [
-        { title: "計劃 vs 實際", url: "/production-reports/plan-actual" },
-        { title: "投入產出", url: "/production-reports/input-output" },
-        { title: "良率分析", url: "/production-reports/yield" },
-        { title: "設備效率", url: "/production-reports/efficiency" }
+        { title: "Summary", url: "/production-reports?category=Summary" },
+        { title: "Material", url: "/production-reports?category=Material" },
+        { title: "Feol", url: "/production-reports?category=Feol" },
+        { title: "Beol", url: "/production-reports?category=Beol" }
       ]
     },
     {
@@ -87,6 +93,17 @@ export function AppSidebar() {
     return true
   })
 
+  const handleSearchClick = () => {
+    // 聚焦到搜尋框
+    setTimeout(() => {
+      const searchInput = document.querySelector('input[placeholder="搜尋系統功能..."]') as HTMLInputElement
+      if (searchInput) {
+        searchInput.focus()
+        searchInput.scrollIntoView({ behavior: 'smooth' })
+      }
+    }, 100)
+  }
+
   return (
     <Sidebar className="border-r border-sidebar-border">
       <SidebarHeader className="border-b border-sidebar-border p-4">
@@ -135,10 +152,17 @@ export function AppSidebar() {
                     isActive={location.pathname === item.url}
                     className="hover:bg-sidebar-accent"
                   >
-                    <a href={item.url} className="flex items-center gap-3">
-                      <item.icon className="h-5 w-5" />
-                      <span>{item.title}</span>
-                    </a>
+                    {item.url === "/#search" ? (
+                      <button onClick={handleSearchClick} className="flex items-center gap-3 w-full text-left">
+                        <item.icon className="h-5 w-5" />
+                        <span>{item.title}</span>
+                      </button>
+                    ) : (
+                      <a href={item.url} className="flex items-center gap-3">
+                        <item.icon className="h-5 w-5" />
+                        <span>{item.title}</span>
+                      </a>
+                    )}
                   </SidebarMenuButton>
                   {item.submenu && (
                     (location.pathname.startsWith('/production-reports') && item.url === '/production-reports') ||

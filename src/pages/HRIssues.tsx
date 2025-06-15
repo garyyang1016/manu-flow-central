@@ -8,18 +8,24 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { User, MessageSquare, Plus, Send, AlertTriangle, CheckCircle, Clock } from "lucide-react"
+import { User, MessageSquare, Plus, Send, AlertTriangle, CheckCircle, Clock, Reply, Filter } from "lucide-react"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 const HRIssues = () => {
   const [showForm, setShowForm] = useState(false)
+  const [showReplyForm, setShowReplyForm] = useState<number | null>(null)
+  const [selectedCategory, setSelectedCategory] = useState("全部")
   const [formData, setFormData] = useState({
     title: "",
     category: "",
     description: "",
     priority: "中"
   })
+  const [replyText, setReplyText] = useState("")
 
-  const issuesData = [
+  const categories = ["全部", "工作環境", "設施維護", "薪資福利", "員工建議", "其他"]
+
+  const [issuesData, setIssuesData] = useState([
     {
       id: 1,
       title: "工作環境噪音過大",
@@ -28,7 +34,10 @@ const HRIssues = () => {
       status: "處理中",
       priority: "高",
       createDate: "2024-05-28",
-      description: "生產線A區域機器噪音超過標準，影響工作效率"
+      description: "生產線A區域機器噪音超過標準，影響工作效率",
+      replies: [
+        { id: 1, author: "人事主管", content: "已安排環安人員現場測量", date: "2024-05-29" }
+      ]
     },
     {
       id: 2,
@@ -38,7 +47,11 @@ const HRIssues = () => {
       status: "已解決",
       priority: "中",
       createDate: "2024-05-27",
-      description: "員工休息室冷氣無法正常運作"
+      description: "員工休息室冷氣無法正常運作",
+      replies: [
+        { id: 1, author: "廠務組", content: "已聯絡廠商維修", date: "2024-05-27" },
+        { id: 2, author: "廠務組", content: "冷氣已修復完成", date: "2024-05-28" }
+      ]
     },
     {
       id: 3,
@@ -48,7 +61,8 @@ const HRIssues = () => {
       status: "待處理",
       priority: "高",
       createDate: "2024-05-26",
-      description: "本月加班費計算似乎有誤，請協助確認"
+      description: "本月加班費計算似乎有誤，請協助確認",
+      replies: []
     },
     {
       id: 4,
@@ -58,9 +72,16 @@ const HRIssues = () => {
       status: "評估中",
       priority: "低",
       createDate: "2024-05-25",
-      description: "目前停車位不足，建議增設員工專用停車區域"
+      description: "目前停車位不足，建議增設員工專用停車區域",
+      replies: [
+        { id: 1, author: "總務組", content: "正在評估可行性與預算", date: "2024-05-26" }
+      ]
     }
-  ]
+  ])
+
+  const filteredIssues = selectedCategory === "全部" 
+    ? issuesData 
+    : issuesData.filter(issue => issue.category === selectedCategory)
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -92,10 +113,37 @@ const HRIssues = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    console.log("提交問題反映:", formData)
-    // 這裡可以添加提交邏輯
+    const newIssue = {
+      id: Date.now(),
+      ...formData,
+      reporter: "當前用戶", // 實際應用中從用戶上下文取得
+      status: "待處理",
+      createDate: new Date().toISOString().split('T')[0],
+      replies: []
+    }
+    setIssuesData([newIssue, ...issuesData])
     setShowForm(false)
     setFormData({ title: "", category: "", description: "", priority: "中" })
+  }
+
+  const handleReply = (issueId: number) => {
+    if (!replyText.trim()) return
+    
+    setIssuesData(issuesData.map(issue => 
+      issue.id === issueId 
+        ? {
+            ...issue,
+            replies: [...issue.replies, {
+              id: Date.now(),
+              author: "管理員", // 實際應用中從用戶上下文取得
+              content: replyText,
+              date: new Date().toISOString().split('T')[0]
+            }]
+          }
+        : issue
+    ))
+    setReplyText("")
+    setShowReplyForm(null)
   }
 
   return (
@@ -137,7 +185,7 @@ const HRIssues = () => {
                   <MessageSquare className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">24</div>
+                  <div className="text-2xl font-bold">{issuesData.length}</div>
                   <p className="text-xs text-muted-foreground">本月累計</p>
                 </CardContent>
               </Card>
@@ -148,7 +196,9 @@ const HRIssues = () => {
                   <AlertTriangle className="h-4 w-4 text-red-600" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-red-600">3</div>
+                  <div className="text-2xl font-bold text-red-600">
+                    {issuesData.filter(issue => issue.status === "待處理").length}
+                  </div>
                   <p className="text-xs text-muted-foreground">需要處理</p>
                 </CardContent>
               </Card>
@@ -159,7 +209,9 @@ const HRIssues = () => {
                   <Clock className="h-4 w-4 text-blue-600" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-blue-600">5</div>
+                  <div className="text-2xl font-bold text-blue-600">
+                    {issuesData.filter(issue => issue.status === "處理中" || issue.status === "評估中").length}
+                  </div>
                   <p className="text-xs text-muted-foreground">正在處理</p>
                 </CardContent>
               </Card>
@@ -170,10 +222,30 @@ const HRIssues = () => {
                   <CheckCircle className="h-4 w-4 text-green-600" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-green-600">16</div>
+                  <div className="text-2xl font-bold text-green-600">
+                    {issuesData.filter(issue => issue.status === "已解決").length}
+                  </div>
                   <p className="text-xs text-muted-foreground">完成處理</p>
                 </CardContent>
               </Card>
+            </div>
+
+            {/* 分類篩選 */}
+            <div className="flex items-center gap-4">
+              <Filter className="h-4 w-4" />
+              <span className="text-sm font-medium">篩選分類：</span>
+              <div className="flex gap-2">
+                {categories.map((category) => (
+                  <Button
+                    key={category}
+                    variant={selectedCategory === category ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setSelectedCategory(category)}
+                  >
+                    {category}
+                  </Button>
+                ))}
+              </div>
             </div>
 
             {/* 新增問題表單 */}
@@ -197,19 +269,21 @@ const HRIssues = () => {
                       </div>
                       <div>
                         <label className="text-sm font-medium">問題分類</label>
-                        <select 
-                          className="w-full p-2 border rounded-md"
+                        <Select 
                           value={formData.category}
-                          onChange={(e) => setFormData({...formData, category: e.target.value})}
-                          required
+                          onValueChange={(value) => setFormData({...formData, category: value})}
                         >
-                          <option value="">請選擇分類</option>
-                          <option value="工作環境">工作環境</option>
-                          <option value="設施維護">設施維護</option>
-                          <option value="薪資福利">薪資福利</option>
-                          <option value="員工建議">員工建議</option>
-                          <option value="其他">其他</option>
-                        </select>
+                          <SelectTrigger>
+                            <SelectValue placeholder="請選擇分類" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="工作環境">工作環境</SelectItem>
+                            <SelectItem value="設施維護">設施維護</SelectItem>
+                            <SelectItem value="薪資福利">薪資福利</SelectItem>
+                            <SelectItem value="員工建議">員工建議</SelectItem>
+                            <SelectItem value="其他">其他</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
                     </div>
                     <div>
@@ -240,11 +314,15 @@ const HRIssues = () => {
             <Card className="chart-container">
               <CardHeader>
                 <CardTitle>問題反映記錄</CardTitle>
-                <CardDescription>員工問題反映與處理狀況追蹤</CardDescription>
+                <CardDescription>
+                  員工問題反映與處理狀況追蹤 
+                  {selectedCategory !== "全部" && ` - ${selectedCategory}分類`}
+                  （共 {filteredIssues.length} 筆）
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {issuesData.map((issue) => (
+                  {filteredIssues.map((issue) => (
                     <div key={issue.id} className="border rounded-lg p-4 hover:bg-gray-50">
                       <div className="flex items-start justify-between mb-2">
                         <div className="flex-1">
@@ -256,13 +334,66 @@ const HRIssues = () => {
                           {getStatusBadge(issue.status)}
                         </div>
                       </div>
-                      <div className="flex items-center justify-between text-sm text-gray-500">
+                      
+                      <div className="flex items-center justify-between text-sm text-gray-500 mb-3">
                         <div className="flex items-center gap-4">
                           <span>反映人: {issue.reporter}</span>
                           <span>分類: {issue.category}</span>
                         </div>
                         <span>建立時間: {issue.createDate}</span>
                       </div>
+
+                      {/* 回覆區域 */}
+                      {issue.replies.length > 0 && (
+                        <div className="mt-3 pl-4 border-l-2 border-gray-200 space-y-2">
+                          <h4 className="text-sm font-medium text-gray-700">回覆記錄：</h4>
+                          {issue.replies.map((reply) => (
+                            <div key={reply.id} className="bg-gray-50 p-3 rounded text-sm">
+                              <div className="flex items-center justify-between mb-1">
+                                <span className="font-medium">{reply.author}</span>
+                                <span className="text-xs text-gray-500">{reply.date}</span>
+                              </div>
+                              <p className="text-gray-700">{reply.content}</p>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* 回覆表單 */}
+                      <div className="mt-3 flex gap-2">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => setShowReplyForm(showReplyForm === issue.id ? null : issue.id)}
+                        >
+                          <Reply className="h-4 w-4 mr-2" />
+                          回覆
+                        </Button>
+                      </div>
+
+                      {showReplyForm === issue.id && (
+                        <div className="mt-3 space-y-2">
+                          <Textarea
+                            value={replyText}
+                            onChange={(e) => setReplyText(e.target.value)}
+                            placeholder="輸入回覆內容..."
+                            rows={3}
+                          />
+                          <div className="flex gap-2">
+                            <Button size="sm" onClick={() => handleReply(issue.id)}>
+                              <Send className="h-4 w-4 mr-2" />
+                              送出回覆
+                            </Button>
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              onClick={() => setShowReplyForm(null)}
+                            >
+                              取消
+                            </Button>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
